@@ -4,7 +4,7 @@
 // @version      0.2
 // @description  KuKu漫画网站点击漫画图片进行翻页的脚本
 // @author       Ming Ye
-// @match        http://comic.kukudm.com/comiclist
+// @match        http://comic.kukudm.com/comiclist/*
 // @grant        none
 // ==/UserScript==
 
