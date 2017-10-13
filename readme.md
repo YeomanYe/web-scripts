@@ -7,3 +7,5 @@
 支持站点：
 [kuku动漫](http://comic.kukudm.com/)
 
+[脚本地址](https://greasyfork.org/zh-CN/scripts/33966-%E6%BC%AB%E7%94%BB%E7%BF%BB%E9%A1%B5%E8%84%9A%E6%9C%AC)
+
