@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         漫画翻页脚本
 // @namespace    http://tampermonkey.net/
-// @version      0.31
+// @version      0.3.1
 // @description  KuKu漫画网站点击漫画图片进行翻页的脚本
 // @author       Ming Ye
 // @match        http://comic.kukudm.com/comiclist/*
