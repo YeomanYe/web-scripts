@@ -14,8 +14,8 @@
 (function() {
     'use strict';
     // 开启调试
-    window.debugMode = true;
-    var debugFun = debugFactory("KuKu动漫点击翻页脚本：","log");
+    window.debugMode = false;
+    var debugFun = consoleFactory("KuKu动漫点击翻页脚本：","log");
     // 获取总页数
     var getTotalPage = function(str) {
         var rep1 = "|",
