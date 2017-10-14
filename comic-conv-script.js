@@ -1,23 +1,19 @@
 // ==UserScript==
 // @name         漫画翻页脚本
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.31
 // @description  KuKu漫画网站点击漫画图片进行翻页的脚本
 // @author       Ming Ye
 // @match        http://comic.kukudm.com/comiclist/*
+// @require      https://raw.githubusercontent.com/YeomanYe/web-scripts/master/lib/debug.js
 // @grant        none
 // ==/UserScript==
 
 (function() {
     'use strict';
-    // 调试
-    var debugMode = true;
-    var debugFun = function(msg, type) {
-        type = type || "log";
-        if (debugMode) {
-            console[type]("KuKu动漫点击翻页脚本: ", msg);
-        }
-    };
+    // 开启调试
+    window.debugMode = true;
+    var debugFun = debugFactory("KuKu动漫点击翻页脚本：","log");
     // 获取总页数
     var getTotalPage = function(str) {
         var rep1 = "|",
