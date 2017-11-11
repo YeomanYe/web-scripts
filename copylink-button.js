@@ -16,7 +16,7 @@
     var $zoom = $('#Zoom');
     var $buttonContainer = $zoom.find('strong:contains("【下载地址】")'),
         $td = $zoom.find('table td'),
-        $button = $('<button>复制</button>');
-    $td.append($button);
+        $linkButton = $('<a>复制</a>');
+    $td.append($linkButton);
     console.log($buttonContainer,$td);
 })();
