@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         漫画翻页脚本
 // @namespace    https://github.com/yeomanye
-// @version      0.5
+// @version      0.6
 // @description  KuKu漫画网站点击漫画图片进行翻页的脚本
 // @author       Ming Ye
 // @homepage     https://greasyfork.org/zh-CN/scripts/33966-%E6%BC%AB%E7%94%BB%E7%BF%BB%E9%A1%B5%E8%84%9A%E6%9C%AC
@@ -16,8 +16,7 @@
 (function() {
     'use strict';
     // 开启调试
-    window.debugMode = true;
-    var debugFun = consoleFactory("KuKu动漫点击翻页脚本：","log");
+    var debugFun = consoleFactory("KuKu动漫点击翻页脚本：","log",null,true);
     // 获取总页数
     var getTotalPage = function(str) {
         var rep1 = "|",
