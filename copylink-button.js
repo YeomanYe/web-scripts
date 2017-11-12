@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         电影天堂链接复制
+// @name         电影天堂点击链接开启迅雷
 // @namespace    https://github.com/yeomanye
-// @version      0.1
-// @description  电影天堂链接复制按钮
+// @version      0.2
+// @description  电影天堂添加链接复制按钮，点击链接打开迅雷
 // @author       Ming Ye
 // @match        http://www.ygdy8.com/html/gndy/*/*/*
 // @include      http://www.ygdy8.net/html/gndy/*/*/*
@@ -17,20 +17,42 @@
 
 (function() {
     'use strict';
-    var log = consoleFactory('复制链接:','log',null,false);
+    var log = consoleFactory('复制链接:', 'log', null, false);
+    //替换链接为迅雷链接
+    var changeLinkToThunderLink = function () {
+        var $thunderlink = $('a');
+        for (var i = 0; i < $thunderlink.length; i++) {
+            if ($thunderlink.eq(i).attr('thunderpid')) {
+                var realthunderlink = '';
+                var linkattributes = $thunderlink[i].attributes;
+                for (var j = 0; j < linkattributes.length; j++) {
+                    if (linkattributes[j].value.indexOf('thunder:/') == 0) {
+                        realthunderlink = linkattributes[j].value;
+                        break;
+                   }
+                }
+                log('realthunderlink:' + realthunderlink);
+                $thunderlink[i].href = realthunderlink;
+            }
+        }
+    };
+    changeLinkToThunderLink();
+    
     var $zoom = $('#Zoom'),
         $container = $zoom.find('table td'), //button容器
         $a = $container.find('a'), //超链接元素
         $btnTemplate = $('<button>复制</button>'); //按钮模板
-    $btnTemplate.attr("data-clipboard-action","copy");
-    log('循环外');
-    for(var i=0,len=$a.length;i<len;i++){
+    $btnTemplate.attr("data-clipboard-action", "copy");
+    for (var i = 0, len = $a.length; i < len; i++) {
         var $cloneBtn = $btnTemplate.clone().attr({
-            'data-clipboard-text':$a.eq(i).text(),
-            'class':'btn'
+            'data-clipboard-text': $a.eq(i).text(),
+            'class': 'btn'
         });
         $container.eq(i).append($cloneBtn);
-        log('循环内');
+        //点击超链接打开迅雷
+        $a.eq(i).click(function(){
+            window.location.href = this.href;
+        });
     }
     new Clipboard('.btn');
 })();
