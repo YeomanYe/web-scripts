@@ -14,9 +14,9 @@
 [脚本地址](https://greasyfork.org/zh-CN/scripts/35065-%E7%94%B5%E5%BD%B1%E5%A4%A9%E5%A0%82%E9%93%BE%E6%8E%A5%E5%A4%8D%E5%88%B6)
 
 支持站点：
-[电影天堂-迅雷电影dytt8](http://www.dytt8.net/)
-[电影天堂dy2018](http://www.dy2018.com/)
-[电影天堂dygod](http://www.dygod.com/)
-[阳光电影ygdy8.com](http://www.ygdy8.com/)
-[阳光电影ygdy8.net](http://www.ygdy8.net/)
+- [电影天堂-迅雷电影dytt8](http://www.dytt8.net/)
+- [电影天堂dy2018](http://www.dy2018.com/)
+- [电影天堂dygod](http://www.dygod.com/)
+- [阳光电影ygdy8.com](http://www.ygdy8.com/)
+- [阳光电影ygdy8.net](http://www.ygdy8.net/)
 
