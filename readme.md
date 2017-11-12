@@ -11,7 +11,7 @@
 
 ### copylink-button
 给电影天堂超链接设置一个复制链接的按钮，如果迅雷等下载器已经启动，会嗅探到下载链接并建立下载任务。
-[脚本地址]()
+[脚本地址](https://greasyfork.org/zh-CN/scripts/35065-%E7%94%B5%E5%BD%B1%E5%A4%A9%E5%A0%82%E9%93%BE%E6%8E%A5%E5%A4%8D%E5%88%B6)
 
 支持站点：
 [电影天堂-迅雷电影dytt8](http://www.dytt8.net/)
