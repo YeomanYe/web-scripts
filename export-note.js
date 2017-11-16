@@ -5,7 +5,7 @@
 // @description  导出慕课网的笔记，分为点赞和采集两种
 // @author       Ming Ye
 // @match        http://www.imooc.com/*/*
-// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=229638
+// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=230828
 // @require      http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js
 // @require      http://libs.cdnjs.net/FileSaver.js/1.3.3/FileSaver.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
