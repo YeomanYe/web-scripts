@@ -51,7 +51,7 @@
                         chapter: chapter
                     };
                 warn('data', data);
-                notes.push(data);
+                if(!hasData(notes,data))notes.push(data);
             }
         }
         var pageNum = parseInt((localStorage.getItem('pageNum')));
@@ -63,12 +63,28 @@
             this.src = baseUrl + pageNum;
         }
     }
+    /**
+     * 查看notes数组中是否含有该条数据，
+     * 因为数据不断往后加载，所以只要比较最后一条即可
+     */
+    function hasData(notes,data){
+        if(!notes || !notes.length) return false;
+        /*var note = notes[notes.length - 1];
+        if(note.note !== data.note) return false;
+        if(note.user !== data.user) return false;
+        if(note.time !== data.time) return false;
+        if(note.chapter !== data.chapter) return false;*/
+        for(var i=0,len=notes.length;i<len;i++){
+            if(notes[i].note !== data.note) return false;
+        }
+        return true;
+    }
 
     $iframe[0].onload = iframeLoadHandler;
 
     $collectBtn.click(function(){
         isPause = true;
-        localStorage.setItem('collectPause',isPause);
+        localStorage.setItem('collectPause',!isPause);
     });
     $btnContainer.append($collectBtn);
     $('body').append($iframe);
