@@ -3,7 +3,7 @@
 
 ## link-blank
 超链接从空白标签页打开，点击超链接从空白标签页打开。适合的网站google。
-[脚本地址]()
+[脚本地址](https://greasyfork.org/zh-CN/scripts/35230-%E8%B6%85%E9%93%BE%E6%8E%A5%E4%BB%8E%E7%A9%BA%E7%99%BD%E6%A0%87%E7%AD%BE%E6%89%93%E5%BC%80)
 
 支持站点:
 [Google搜索](https://www.google.com/search)
