@@ -5,7 +5,7 @@
 // @description  导出慕课网的笔记，分为点赞和采集两种
 // @author       Ming Ye
 // @match        http://www.imooc.com/*/*
-// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=230828
+// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=230833
 // @require      http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js
 // @require      http://libs.cdnjs.net/FileSaver.js/1.3.3/FileSaver.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
@@ -15,8 +15,9 @@
 (function() {
     'use strict';
 
-    var log = consoleFactory('导出笔记脚本:', 'log', null, true),
-        warn = consoleFactory('导出笔记脚本:', 'warn', null, true);
+    var log = window.myDebugger.consoleFactory('导出笔记脚本:', 'log', null, true),
+        warn = window.myDebugger.consoleFactory('导出笔记脚本:', 'warn', null, true),
+        debugTrue = window.myDebugger.debugTrue(true);
     log(saveAs);
     var $btnContainer = $('#main .course-info-main .content-wrap .mod-tab-menu .course-menu');
     var $collectBtn = $('<li><a style="color:orange;cursor:pointer;">导出笔记</a></li>'), //采集按钮
@@ -36,6 +37,7 @@
         warn($collectI);
         var notes = JSON.parse(localStorage.getItem('notes'));
         for (var i = 0, len = $collectI.length; i < len; i++) {
+            debugTrue();
             notes = notes || [];
             flag = true;
             if ($collectI.eq(i).text() == '已采集') {
