@@ -6,6 +6,7 @@
 // @author       Ming Ye
 // @match        https://www.google.com/*
 // @include      https://www.google.com.pe/*
+// @include      https://www.google.co.uk/*
 // @grant        none
 // ==/UserScript==
 

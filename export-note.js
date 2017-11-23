@@ -5,7 +5,7 @@
 // @description  导出慕课网的笔记，分为点赞和采集两种
 // @author       Ming Ye
 // @match        http://www.imooc.com/*/*
-// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=230833
+// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=230834
 // @require      http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js
 // @require      http://libs.cdnjs.net/FileSaver.js/1.3.3/FileSaver.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
@@ -25,7 +25,7 @@
         courseId = window.location.pathname.split("/")[2], //课程ID
         pageNum = 1, //笔记页码
         $iframe = $("<iframe hidden></iframe>"),
-        isPause = localStorage.getItem('collectPause') || false,//标志是否停止采集
+        isPause = (localStorage.getItem('collectPause') === "true"),//标志是否停止采集
         baseUrl = 'http://' + window.location.hostname + '/note/' + courseId + '?sort=hot&page=';
     log('课程ID', courseId);
 
@@ -37,7 +37,6 @@
         warn($collectI);
         var notes = JSON.parse(localStorage.getItem('notes'));
         for (var i = 0, len = $collectI.length; i < len; i++) {
-            debugTrue();
             notes = notes || [];
             flag = true;
             if ($collectI.eq(i).text() == '已采集') {
@@ -77,7 +76,7 @@
         if(note.time !== data.time) return false;
         if(note.chapter !== data.chapter) return false;*/
         for(var i=0,len=notes.length;i<len;i++){
-            if(notes[i].note !== data.note) return false;
+            if(notes[i].note != data.note) return false;
         }
         return true;
     }
