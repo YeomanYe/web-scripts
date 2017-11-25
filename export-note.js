@@ -27,23 +27,44 @@
         $iframe = $("<iframe hidden></iframe>"),
         isPause = (localStorage.getItem('collectPause') === "true"), //标志是否停止采集
         baseUrl = window.location.protocol + '//' + window.location.hostname + '/note/' + courseId + '?sort=hot&page=';
+    var courseId = window.location.pathname.split("/")[2], //课程ID
+        baseUrl = window.location.protocol + '//' + window.location.hostname + '/note/' + courseId + '?sort=hot&page=',
+        $html = null,
+        pageNum = 1; //笔记页码
     log('课程ID', courseId);
     log('基准url', baseUrl);
-    var htmlobj = $.ajax({
-        url: baseUrl + '1',
-        async: false
-    });
-    var $html = $(htmlobj.responseText);
-    log.logObj('$html', $html);
-    var $collectI = $html.find('#js-note-container .Jcollect i');
-    log.logObj('$collectI', $collectI);
-    var flag = false; //笔记成功加载并处理后，才处理下一页
-    var notes = JSON.parse(localStorage.getItem('notes'));
-    for (var i = 0, len = $collectI.length; i < len; i++) {
+    do {
+        var htmlText = $.ajax({
+            url: baseUrl + pageNum,
+            async: false
+        }).responseText;
+        ++pageNum;
+        $html = $(htmlText);
+        log.logObj('$html', $html);
+        var flag = false; //笔记成功加载并处理后，才处理下一页
+
+        var notes = JSON.parse(localStorage.getItem('notes'));
+        var noteIds = getNoteIds($html);
+        var noteStatus = getUserNoteStatus(noteIds);
+        var colObj = getColObj(noteStatus);
+        var dataArr = fetchColContent(colObj.col);
         notes = notes || [];
-        flag = true;
-        if ($collectI.eq(i).text() == '采集') {
-            var $content = $collectI.eq(i).parents('li.post-row'),
+        for (var i = 0, len = dataArr.length; i < len; i++) {
+            notes.push(dataArr[i]);
+        }
+        localStorage.setItem('notes', JSON.stringify(notes));
+    } while ($html.find('#js-note-container').length);
+
+
+    /**
+     * 获取采集对象
+     * @param  {array} colArr 采集参照的id数组
+     * @return {object}        采集对象
+     */
+    function fetchColContent(colArr) {
+        var retDatas = [];
+        for (var i = 0, len = colArr.length; i < len; i++) {
+            var $content = $html.find('#' + colArr[i]),
                 noteStr = $content.find('.js-notelist-content .autowrap')[0].innerText,
                 user = $content.find('.bd .tit')[0].innerText,
                 time = $content.find('.footer .timeago')[0].innerText.replace('时间：', ''),
@@ -54,10 +75,76 @@
                     time: time,
                     chapter: chapter
                 };
-            log.logObj('data', data);
-            if (!hasData(notes, data)) notes.push(data);
+            retDatas.push(data);
         }
+        log.logArr('fetchColContent', retDatas);
+        return retDatas;
     }
+    /**
+     * 使用jsonp方式获取用户对象,获得对象后保存在window.usr中
+     */
+    function fetchUser() {
+        var retStr = $.ajax({
+            url: 'https://www.imooc.com/u/card%20?jsonpcallback=getUser&_=' + new Date().getTime(),
+            async: false,
+        }).responseText;
+        log('fetchUser', retStr);
+        retStr = retStr.replace('getUser(', '');
+        retStr = retStr.substr(0, retStr.length - 1);
+        var usr = JSON.parse(retStr);
+        log.logObj('fetchUser', usr);
+        return usr;
+    }
+    /**
+     * 获取采集的id数组
+     * @param  {object} noteStatus 笔记状态对象
+     * @return {object}            返回采集和点赞的数组{col:[],pra:[]}
+     */
+    function getColObj(noteStatus) {
+        var tmp = noteStatus.data.collections,
+            retObj = {
+                col: [],
+                pra: []
+            };
+        for (var i = 0, len = tmp.length; i < len; i++) {
+            retObj.col.push(tmp[i].src_note_id);
+        }
+        tmp = noteStatus.data.praises;
+        for (var i = 0, len = tmp.length; i < len; i++) {
+            retObj.pra.push(tmp[i].note_id);
+        }
+        log.logObj('getColIds', retObj);
+        return retObj
+    }
+    /**
+     * 获取笔记id
+     * @param  {object} $html 当前页html对象
+     * @return {array}       笔记id数组
+     */
+    function getNoteIds($html) {
+        var lis = $html.find('#js-note-container li'),
+            ids = [];
+        for (var i = 0, len = lis.length; i < len; i++) {
+            ids.push(lis.get(i).id);
+        }
+        log.logArr('ids', ids);
+        return ids;
+    }
+    /**
+     * 获取用户笔记状态
+     * @param  {array} ids 用户笔记id数组
+     * @return {object} 用户笔记操作状态对象
+     */
+    function getUserNoteStatus(ids) {
+        var retStr = $.ajax({
+                url: 'https://www.imooc.com/course/AjaxUserNotesStatus?ids=' + encodeURI(ids.join(',')),
+                async: false
+            }).responseText,
+            retObj = JSON.parse(retStr);
+        log.logObj('getUserNoteStatus', retObj);
+        return retObj
+    }
+    fetchUser();
     // log('htmlobj',htmlobj.responseText);
     function iframeLoadHandler(e) {
         log(e, this);
