@@ -31,19 +31,54 @@
         baseUrl = window.location.protocol + '//' + window.location.hostname + '/note/' + courseId + '?sort=hot&page=',
         $html = null,
         pageNum = 1; //笔记页码
+    var notes = JSON.parse(localStorage.getItem('notes'));
+    $collectBtn.click(fetchNote).appendTo($('#main .course-infos .hd'));
     log('课程ID', courseId);
     log('基准url', baseUrl);
-    do {
+    var isPause = true;
+    var noteTimeout = null;
+
+    window.notePateNum = 50;
+    function fetchNote() {
+        do {
+            var htmlText = $.ajax({
+                url: baseUrl + pageNum,
+                async: false
+            }).responseText;
+            ++pageNum;
+            $html = $(htmlText);
+            log.logObj('$html', $html);
+
+            var noteIds = getNoteIds($html);
+            var noteStatus = getUserNoteStatus(noteIds);
+            var colObj = getColObj(noteStatus);
+            var dataArr = fetchColContent(colObj.col);
+            notes = notes || [];
+            for (var i = 0, len = dataArr.length; i < len; i++) {
+                notes.push(dataArr[i]);
+            }
+            localStorage.setItem('notes', JSON.stringify(notes));
+            log('pageNum',pageNum);
+            if (pageNum > window.notePateNum) {
+                break;
+            }
+        } while ($html.find('#js-note-container').length);
+    }
+    // fetchNote();
+    window.fetchNote = fetchNote;
+    /*var fetchNote = function (){
+        if(noteTimeout) endTimeout(noteTimeout);
         var htmlText = $.ajax({
             url: baseUrl + pageNum,
             async: false
         }).responseText;
         ++pageNum;
         $html = $(htmlText);
+        //当查询不到笔记容器id表示已经获取完所有的笔记了;
+        if(!$html.find('#js-note-container').length)  return;
         log.logObj('$html', $html);
         var flag = false; //笔记成功加载并处理后，才处理下一页
 
-        var notes = JSON.parse(localStorage.getItem('notes'));
         var noteIds = getNoteIds($html);
         var noteStatus = getUserNoteStatus(noteIds);
         var colObj = getColObj(noteStatus);
@@ -52,10 +87,15 @@
         for (var i = 0, len = dataArr.length; i < len; i++) {
             notes.push(dataArr[i]);
         }
+        log('pageNum',pageNum);
+        // debugTrue();
         localStorage.setItem('notes', JSON.stringify(notes));
-    } while ($html.find('#js-note-container').length);
-
-
+        noteTimeout = startTimeout(window.fetchNote,0);
+    }
+    window.fetchNote = fetchNote;
+    var startTimeout = window.setTimeout,
+        endTimeout = window.clearTimeout;
+    fetchNote();*/
     /**
      * 获取采集对象
      * @param  {array} colArr 采集参照的id数组
@@ -85,7 +125,7 @@
      */
     function fetchUser() {
         var retStr = $.ajax({
-            url: 'https://www.imooc.com/u/card%20?jsonpcallback=getUser&_=' + new Date().getTime(),
+            url: window.location.protocol+'//www.imooc.com/u/card%20?jsonpcallback=getUser&_=' + new Date().getTime(),
             async: false,
         }).responseText;
         log('fetchUser', retStr);
@@ -114,7 +154,7 @@
             retObj.pra.push(tmp[i].note_id);
         }
         log.logObj('getColIds', retObj);
-        return retObj
+        return retObj;
     }
     /**
      * 获取笔记id
@@ -137,24 +177,34 @@
      */
     function getUserNoteStatus(ids) {
         var retStr = $.ajax({
-                url: 'https://www.imooc.com/course/AjaxUserNotesStatus?ids=' + encodeURI(ids.join(',')),
+                url: window.location.protocol+'//www.imooc.com/course/AjaxUserNotesStatus?ids=' + ids.join('%2C'),
                 async: false
             }).responseText,
             retObj = JSON.parse(retStr);
+        log('url',window.location.protocol+'//www.imooc.com/course/AjaxUserNotesStatus?ids=' + encodeURI(ids.join('%2C')));
         log.logObj('getUserNoteStatus', retObj);
-        return retObj
+        return retObj;
     }
     fetchUser();
     // log('htmlobj',htmlobj.responseText);
+    var notes = JSON.parse(localStorage.getItem('notes'));
     function iframeLoadHandler(e) {
-        log(e, this);
+        
         var $contDoc = $(this.contentDocument);
+        log('contentDocument',this.contentDocument);
         var $collectI = $contDoc.find('#js-note-container .Jcollect i');
+        log('$collectI',$collectI);
+        log('pageNum',pageNum);
+        //如果不存在笔记，则已经到了最后一页
+        if($contDoc.find('#course_note .unnote').length) {
+            window.isOver = true;
+            return;
+        }
         var flag = false; //笔记成功加载并处理后，才处理下一页
-        warn($collectI);
-        var notes = JSON.parse(localStorage.getItem('notes'));
+        log.logArr('$collectI',$collectI);
+        
+        notes = notes || [];
         for (var i = 0, len = $collectI.length; i < len; i++) {
-            notes = notes || [];
             flag = true;
             if ($collectI.eq(i).text() == '已采集') {
                 var $content = $collectI.eq(i).parents('li.post-row'),
@@ -168,14 +218,14 @@
                         time: time,
                         chapter: chapter
                     };
-                warn('data', data);
+                log('data', data);
                 if (!hasData(notes, data)) notes.push(data);
             }
         }
-        var pageNum = parseInt((localStorage.getItem('pageNum')));
+        pageNum = parseInt((localStorage.getItem('pageNum')));
         pageNum = pageNum ? (pageNum + 1) : 2;
-        warn(pageNum);
-        if (flag && !isPause) {
+        log(pageNum);
+        if (true/*flag && !isPause*/) {
             localStorage.setItem('notes', JSON.stringify(notes));
             localStorage.setItem('pageNum', pageNum);
             this.src = baseUrl + pageNum;
@@ -197,8 +247,10 @@
         }
         return true;
     }
-
-    /*$iframe[0].onload = iframeLoadHandler;
+    log('isOver',window.isOver);
+    if(window.isOver) return;
+    log('pageNum',pageNum);
+    $iframe[0].onload = iframeLoadHandler;
 
     $collectBtn.click(function(){
         isPause = true;
@@ -206,5 +258,5 @@
     });
     $btnContainer.append($collectBtn);
     $('body').append($iframe);
-    $iframe[0].src = baseUrl + pageNum;*/
+    $iframe[0].src = baseUrl + pageNum;
 })();
