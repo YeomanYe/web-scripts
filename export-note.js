@@ -39,7 +39,7 @@
     var noteTimeout = null;
 
     window.notePateNum = 50;
-    function fetchNote() {
+    /*function fetchNote() {
         do {
             var htmlText = $.ajax({
                 url: baseUrl + pageNum,
@@ -63,15 +63,15 @@
                 break;
             }
         } while ($html.find('#js-note-container').length);
-    }
+    }*/
     // fetchNote();
-    window.fetchNote = fetchNote;
-    /*var fetchNote = function (){
+    var fetchNote = function (){
         if(noteTimeout) endTimeout(noteTimeout);
         var htmlText = $.ajax({
             url: baseUrl + pageNum,
             async: false
         }).responseText;
+        log(htmlText);
         ++pageNum;
         $html = $(htmlText);
         //当查询不到笔记容器id表示已经获取完所有的笔记了;
@@ -95,7 +95,7 @@
     window.fetchNote = fetchNote;
     var startTimeout = window.setTimeout,
         endTimeout = window.clearTimeout;
-    fetchNote();*/
+    fetchNote();
     /**
      * 获取采集对象
      * @param  {array} colArr 采集参照的id数组
@@ -247,7 +247,7 @@
         }
         return true;
     }
-    log('isOver',window.isOver);
+    /*log('isOver',window.isOver);
     if(window.isOver) return;
     log('pageNum',pageNum);
     $iframe[0].onload = iframeLoadHandler;
@@ -258,5 +258,5 @@
     });
     $btnContainer.append($collectBtn);
     $('body').append($iframe);
-    $iframe[0].src = baseUrl + pageNum;
+    $iframe[0].src = baseUrl + pageNum;*/
 })();
