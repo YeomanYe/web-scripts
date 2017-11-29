@@ -71,8 +71,10 @@
             url: baseUrl + pageNum,
             async: false
         }).responseText;
-        log(htmlText);
+        log('pageNum',pageNum);
         ++pageNum;
+        noteTimeout = setTimeout(fetchNote,100);
+        return;
         $html = $(htmlText);
         //当查询不到笔记容器id表示已经获取完所有的笔记了;
         if(!$html.find('#js-note-container').length)  return;
@@ -92,7 +94,6 @@
         localStorage.setItem('notes', JSON.stringify(notes));
         noteTimeout = startTimeout(window.fetchNote,0);
     }
-    window.fetchNote = fetchNote;
     var startTimeout = window.setTimeout,
         endTimeout = window.clearTimeout;
     fetchNote();
