@@ -73,10 +73,17 @@
         }).responseText;
         log('pageNum',pageNum);
         ++pageNum;
-        noteTimeout = setTimeout(fetchNote,100);
-        return;
-        $html = $(htmlText);
+        // return;
+        var pattern = /<ul id="js-note-container" class="mod-post">([\s\S]*)?<\/ul>/g;
+        // console.log(htmlText);
+        var pattern1 = /<li id="([\s\S]*)" class="post-row js-find-txt"[\s\S]*?<\/li>)/g;
+        var matchArr = pattern.exec(htmlText);
+        var liStrArr = pattern1.exec(matchArr[1]);
+        log.logObj('arr',liStrArr[0]);
+        // $html = $(htmlText);
         //当查询不到笔记容器id表示已经获取完所有的笔记了;
+        // noteTimeout = setTimeout(fetchNote,100);
+        return ;
         if(!$html.find('#js-note-container').length)  return;
         log.logObj('$html', $html);
         var flag = false; //笔记成功加载并处理后，才处理下一页
@@ -92,10 +99,8 @@
         log('pageNum',pageNum);
         // debugTrue();
         localStorage.setItem('notes', JSON.stringify(notes));
-        noteTimeout = startTimeout(window.fetchNote,0);
+        noteTimeout = setTimeout(window.fetchNote,0);
     }
-    var startTimeout = window.setTimeout,
-        endTimeout = window.clearTimeout;
     fetchNote();
     /**
      * 获取采集对象
