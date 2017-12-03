@@ -76,12 +76,23 @@
         // return;
         var pattern = /<ul id="js-note-container" class="mod-post">([\s\S]*)?<\/ul>/g;
         // console.log(htmlText);
-        var pattern1 = /<li id="[\d]+" class="post-row js-find-txt" courseid="[\d]+" noteId="[\d]+" authorid="[\d]+">/g;
-        var matchArr = pattern.exec(htmlText);
-        var liStrArr = pattern1.exec(matchArr[1]);
-        log('input',matchArr[1].charAt(4));
-        log.logObj('arr',liStrArr);
-        log(liStrArr[2])
+        var pattern1 = /<li id="([\d]+)" class="post-row js-find-txt" courseid="[\d]+" noteId="[\d]+" authorid="[\d]+">[\s\S]*?<\/li>/g;
+        var matchArr = pattern.exec(htmlText),
+            liIds = [],
+            liStrArr = [],
+            regInput = matchArr[0];
+        // log.logObj('regInput',regInput);
+        while(matchArr = pattern1.exec(regInput)){
+            log.logObj('matchArr',matchArr);
+            liIds.push(matchArr[1]);
+            liStrArr.push(matchArr[0]);
+            // regInput = regInput.replace(matchArr[0],'');
+            // log.logObj('regInput',regInput);
+        }
+        // log('input',matchArr[1].charAt(4));
+        log.logObj('liStrArr',liStrArr);
+        log.logArr('liIds',liIds);
+        /*log('liStrArr[1]',liStrArr[1].replace('<li id="([\\d]+)" class="post-row js-find-txt" courseid="[\\d]+" noteId="([\\d]+)" authorid="[\\d]+">[\\s\\S]*?</li>',''))*/
         // $html = $(htmlText);
         //当查询不到笔记容器id表示已经获取完所有的笔记了;
         // noteTimeout = setTimeout(fetchNote,100);
