@@ -2,7 +2,7 @@
 // @name         导出慕课网笔记
 // @namespace    https://github.com/yeomanye
 // @version      0.1
-// @description  导出慕课网的笔记，分为点赞和采集两种
+// @description  导出慕课网的笔记，分为点赞和采集两种（本人编写的也会被导出）。导出的格式为json。导出过程可以暂停，下次在进行导出。
 // @author       Ming Ye
 // @match        http://www.imooc.com/*/*
 // @include      https://www.imooc.com/*/*
@@ -17,125 +17,144 @@
     'use strict';
 
     var log = window.myDebugger.consoleFactory('慕课网导出笔记脚本:', 'color:brown;font-size:13px'),
-        warn = window.myDebugger.consoleFactory('导出笔记脚本:'),
         debugTrue = window.myDebugger.debugTrue(true);
-    var $btnContainer = $('#main .course-info-main .content-wrap .mod-tab-menu .course-menu');
-    var $collectBtn = $('<li><a style="color:orange;cursor:pointer;">导出笔记</a></li>'), //采集按钮
-        $praiseBtn = $('<li><a style="color:orange;cursor:pointer;">赞</a></li>'), //采集按钮
+    var $btnContainer = $('#main .course-info-main .content-wrap .mod-tab-menu .course-menu'),
+        $collectBtn = $('<a id="exportNoteBtn" style="margin:10px;padding:10px;border-radius:5px;background-color:orange;color:white;cursor:pointer;">导出笔记</a>'),//采集按钮
+        $exportColCheck = $('<div style="display:inline-block;margin-right:10px"><input type="checkbox" id="exportColCheck"/><span style="color:white;">采集</span>'),
+        $exportPraCheck = $('<input type="checkbox" id="exportPraCheck"/><span style="color:white;">点赞</span>'),
+        $curPageLabel = $('<p id="curPage" style="margin-top:10px;margin-left:30px;color:white;"><span>当前采集页数:</span><span id="curPageNum">0</span></p>');
+    
+    $collectBtn.click(btnClickHandler).appendTo($('#main .course-infos .hd'));
+    $exportColCheck.appendTo($('#main .course-infos .hd'));
+    $exportPraCheck.appendTo($('#main .course-infos .hd'));
+    $curPageLabel.appendTo($('#main .course-infos .hd'));
+    
+    var isPause = true,
         courseId = window.location.pathname.split("/")[2], //课程ID
-        pageNum = 1, //笔记页码
-        $iframe = $("<iframe hidden></iframe>"),
-        isPause = (localStorage.getItem('collectPause') === "true"), //标志是否停止采集
-        baseUrl = window.location.protocol + '//' + window.location.hostname + '/note/' + courseId + '?sort=hot&page=';
-    var courseId = window.location.pathname.split("/")[2], //课程ID
         baseUrl = window.location.protocol + '//' + window.location.hostname + '/note/' + courseId + '?sort=hot&page=',
-        $html = null,
-        pageNum = 1; //笔记页码
-    var notes = JSON.parse(localStorage.getItem('notes'));
-    $collectBtn.click(fetchNote).appendTo($('#main .course-infos .hd'));
+        pageNum = localStorage.getItem('pageNum-'+courseId), //笔记页码
+        noteTimeout = null,
+        userObj = fetchUser().data, //用户对象，保存用户相关信息
+        notes = JSON.parse(localStorage.getItem('notes-'+courseId)), //
+        isCol = false,//是否收集采集的笔记
+        isPra = false;//是否收集点赞的笔记
     log('课程ID', courseId);
     log('基准url', baseUrl);
-    var isPause = true;
-    var noteTimeout = null;
+    pageNum = pageNum ? pageNum : 1;
 
-    window.notePateNum = 50;
-    /*function fetchNote() {
-        do {
-            var htmlText = $.ajax({
-                url: baseUrl + pageNum,
-                async: false
-            }).responseText;
-            ++pageNum;
-            $html = $(htmlText);
-            log.logObj('$html', $html);
-
-            var noteIds = getNoteIds($html);
-            var noteStatus = getUserNoteStatus(noteIds);
-            var colObj = getColObj(noteStatus);
-            var dataArr = fetchColContent(colObj.col);
-            notes = notes || [];
-            for (var i = 0, len = dataArr.length; i < len; i++) {
-                notes.push(dataArr[i]);
-            }
-            localStorage.setItem('notes', JSON.stringify(notes));
-            log('pageNum',pageNum);
-            if (pageNum > window.notePateNum) {
-                break;
-            }
-        } while ($html.find('#js-note-container').length);
-    }*/
-    // fetchNote();
-    var fetchNote = function (){
-        if(noteTimeout) endTimeout(noteTimeout);
+    /**
+     * 导出笔记按钮点击事件
+     */
+    function btnClickHandler(){
+        isPause = !isPause;
+        if(isPause){
+            $("#exportNoteBtn").text('导出笔记');
+            clearTimeout(noteTimeout)
+        }else{
+            isCol = $('#exportColCheck')[0].checked;
+            isPra = $('#exportPraCheck')[0].checked;
+            $("#exportNoteBtn").text('暂停导出');
+            fetchNote();
+        }
+    }
+    /**
+     * 采集笔记
+     */
+    function fetchNote(){
         var htmlText = $.ajax({
             url: baseUrl + pageNum,
             async: false
         }).responseText;
-        log('pageNum',pageNum);
-        ++pageNum;
-        // return;
-        var pattern = /<ul id="js-note-container" class="mod-post">([\s\S]*)?<\/ul>/g;
-        // console.log(htmlText);
-        var pattern1 = /<li id="([\d]+)" class="post-row js-find-txt" courseid="[\d]+" noteId="[\d]+" authorid="[\d]+">[\s\S]*?<\/li>/g;
-        var matchArr = pattern.exec(htmlText),
-            liIds = [],
-            liStrArr = [],
-            regInput = matchArr[0];
-        // log.logObj('regInput',regInput);
-        while(matchArr = pattern1.exec(regInput)){
-            log.logObj('matchArr',matchArr);
-            liIds.push(matchArr[1]);
-            liStrArr.push(matchArr[0]);
-            // regInput = regInput.replace(matchArr[0],'');
-            // log.logObj('regInput',regInput);
+        //最后导出笔记
+        if(htmlText.indexOf('此课程暂无同学记录过笔记')>=0){
+            var blob = new Blob([JSON.stringify(notes)], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, "notes.json");
+            return;
         }
-        // log('input',matchArr[1].charAt(4));
-        log.logObj('liStrArr',liStrArr);
-        log.logArr('liIds',liIds);
-        /*log('liStrArr[1]',liStrArr[1].replace('<li id="([\\d]+)" class="post-row js-find-txt" courseid="[\\d]+" noteId="([\\d]+)" authorid="[\\d]+">[\\s\\S]*?</li>',''))*/
-        // $html = $(htmlText);
-        //当查询不到笔记容器id表示已经获取完所有的笔记了;
-        // noteTimeout = setTimeout(fetchNote,100);
-        return ;
-        if(!$html.find('#js-note-container').length)  return;
-        log.logObj('$html', $html);
-        var flag = false; //笔记成功加载并处理后，才处理下一页
 
-        var noteIds = getNoteIds($html);
-        var noteStatus = getUserNoteStatus(noteIds);
+        log('pageNum',pageNum);
+        $("#curPageNum").html(pageNum);
+        ++pageNum;
+        var obj = getNoteElem(htmlText);
+        var noteStatus = getUserNoteStatus(obj.noteIds);
         var colObj = getColObj(noteStatus);
-        var dataArr = fetchColContent(colObj.col);
+        var colIdArr = []; //需要采集的笔记的id数组
+        if(isCol){
+            colIdArr = colObj.col;
+        }else if(isPra){
+            for(var i=0,len=colObj.pra.length;i<len;i++){
+                colIdArr.push(colObj.pra[i]);
+            }
+        }
+        var dataArr = fetchColContent(colIdArr,obj.noteStrArr);
+        
         notes = notes || [];
         for (var i = 0, len = dataArr.length; i < len; i++) {
             notes.push(dataArr[i]);
         }
         log('pageNum',pageNum);
         // debugTrue();
-        localStorage.setItem('notes', JSON.stringify(notes));
-        noteTimeout = setTimeout(window.fetchNote,0);
+        localStorage.setItem('notes-'+courseId, JSON.stringify(notes));
+        localStorage.setItem('pageNum-'+courseId,pageNum);
+        //当查询不到笔记容器id表示已经获取完所有的笔记了;
+        noteTimeout = setTimeout(fetchNote,100);
+        return ;
     }
-    fetchNote();
+    
     /**
      * 获取采集对象
      * @param  {array} colArr 采集参照的id数组
      * @return {object}        采集对象
      */
-    function fetchColContent(colArr) {
+    function fetchColContent(colArr,liStrArr) {
         var retDatas = [];
-        for (var i = 0, len = colArr.length; i < len; i++) {
-            var $content = $html.find('#' + colArr[i]),
-                noteStr = $content.find('.js-notelist-content .autowrap')[0].innerText,
-                user = $content.find('.bd .tit')[0].innerText,
-                time = $content.find('.footer .timeago')[0].innerText.replace('时间：', ''),
-                chapter = $content.find('.footer .from')[0].innerText.replace('源自：', ''),
-                data = {
-                    note: noteStr,
-                    user: user,
-                    time: time,
-                    chapter: chapter
-                };
-            retDatas.push(data);
+        for(var i=0,len=colArr.length;i<len;i++){
+            var id = colArr[i];
+            for(var j=0,len2=liStrArr.length;j<len2;j++){
+                var liStr = liStrArr[j];
+                if(liStr.indexOf('id="'+id+'"')>=0 || liStr.indexOf('authorid="'+userObj.uid+'"')>=0){
+                    var patternNote = /<div class="js-notelist-content notelist-content mynote">[\s\S]*?<pre class="autowrap">([\s\S]*?)<\/pre>/g,
+                        patternUser = /<div class="tit">[\s\S]*?<a [\s\S]*? target="_blank">([\s\S]*?)<\/a>/g,
+                        patternTime = /<div class="footer clearfix">[\s\S]*?<span [\s\S]*?>时间：([\s\S]*?)<\/span>/g,
+                        patternChapter = /<div class="footer clearfix">[\s\S]*?<a [\s\S]*?>源自：([\s\S]*?)<\/a>/g,
+                        patternAuthLink = /<div class="media">[\s\S]*?<a href="([\s\S]*?)">/,
+                        patternScreenshot = /<div class="js-toggle-notelist answerImg">[\s\S]*?<img [\s\S]*? data-src="([\s\S]*?)"/,
+                        patternCourseLink = /<div class="footer clearfix">[\s\S]*?<a href="[\s\S]*?"/g,
+                        patternFileId = /<div class="disscus-code-icon-wrap">[\s\S]*?<i class="disscus-code-icon js-show-node-code" data-id="([\s\S]*?)"/g;
+                    var noteStr = patternNote.exec(liStr)[1],
+                        user = patternUser.exec(liStr)[1],
+                        time = patternTime.exec(liStr)[1],
+                        chapter = patternChapter.exec(liStr)[1],
+                        authLink = window.location.origin + patternAuthLink.exec(liStr)[1],
+                        courseLink = window.location.origin + patternCourseLink.exec(liStr)[1],
+                        matchScreenshotLink = patternScreenshot.exec(liStr),
+                        matchFileId = patternFileId.exec(liStr);
+                    var data = {
+                        note:noteStr,
+                        time:time,
+                        user:user,
+                        chapter:chapter,
+                        authLink:authLink,
+                        courseLink:courseLink
+                    };
+                    //如果存在截图，则获取截图url
+                    if(matchScreenshotLink && matchScreenshotLink[1]){
+                        data.screenshotLink = window.location.protocol+matchScreenshotLink[1]
+                    }
+                    //如果存在代码快照，则获取代码快照
+                    if(matchFileId && matchFileId[1]){
+                        var retStr = $.ajax({
+                            url: 'https://www.imooc.com/course/viewnotecode?id='+matchFileId[1],
+                            async: false,
+                        }).responseText;
+                        data.codeFiles = JSON.parse(retStr).files;
+                    }
+                    log.logObj('data',data);
+                    retDatas.push(data);
+                }
+            }
         }
+
         log.logArr('fetchColContent', retDatas);
         return retDatas;
     }
@@ -176,18 +195,24 @@
         return retObj;
     }
     /**
-     * 获取笔记id
-     * @param  {object} $html 当前页html对象
-     * @return {array}       笔记id数组
+     * 获取笔记元素的id和字符串数组
+     * @return {object} 笔记id和笔记元素字符串数组
      */
-    function getNoteIds($html) {
-        var lis = $html.find('#js-note-container li'),
-            ids = [];
-        for (var i = 0, len = lis.length; i < len; i++) {
-            ids.push(lis.get(i).id);
+    function getNoteElem(htmlText){
+        var pattern = /<ul id="js-note-container" class="mod-post">([\s\S]*)?<\/ul>/g;
+        var pattern1 = /<li id="([\d]+)" class="post-row js-find-txt" courseid="[\d]+" noteId="[\d]+" authorid="[\d]+">[\s\S]*?<\/li>/g;
+        var matchArr = pattern.exec(htmlText),
+            liIds = [],
+            liStrArr = [],
+            regInput = matchArr[0];
+        while(matchArr = pattern1.exec(regInput)){
+            log.logObj('matchArr',matchArr);
+            liIds.push(matchArr[1]);
+            liStrArr.push(matchArr[0]);
         }
-        log.logArr('ids', ids);
-        return ids;
+        log.logObj('liStrArr',liStrArr);
+        log.logArr('liIds',liIds);
+        return {noteIds:liIds,noteStrArr:liStrArr};
     }
     /**
      * 获取用户笔记状态
@@ -204,78 +229,5 @@
         log.logObj('getUserNoteStatus', retObj);
         return retObj;
     }
-    fetchUser();
-    // log('htmlobj',htmlobj.responseText);
-    var notes = JSON.parse(localStorage.getItem('notes'));
-    function iframeLoadHandler(e) {
-        
-        var $contDoc = $(this.contentDocument);
-        log('contentDocument',this.contentDocument);
-        var $collectI = $contDoc.find('#js-note-container .Jcollect i');
-        log('$collectI',$collectI);
-        log('pageNum',pageNum);
-        //如果不存在笔记，则已经到了最后一页
-        if($contDoc.find('#course_note .unnote').length) {
-            window.isOver = true;
-            return;
-        }
-        var flag = false; //笔记成功加载并处理后，才处理下一页
-        log.logArr('$collectI',$collectI);
-        
-        notes = notes || [];
-        for (var i = 0, len = $collectI.length; i < len; i++) {
-            flag = true;
-            if ($collectI.eq(i).text() == '已采集') {
-                var $content = $collectI.eq(i).parents('li.post-row'),
-                    noteStr = $content.find('.js-notelist-content .autowrap')[0].innerText,
-                    user = $content.find('.bd .tit')[0].innerText,
-                    time = $content.find('.footer .timeago')[0].innerText.replace('时间：', ''),
-                    chapter = $content.find('.footer .from')[0].innerText.replace('源自：', ''),
-                    data = {
-                        note: noteStr,
-                        user: user,
-                        time: time,
-                        chapter: chapter
-                    };
-                log('data', data);
-                if (!hasData(notes, data)) notes.push(data);
-            }
-        }
-        pageNum = parseInt((localStorage.getItem('pageNum')));
-        pageNum = pageNum ? (pageNum + 1) : 2;
-        log(pageNum);
-        if (true/*flag && !isPause*/) {
-            localStorage.setItem('notes', JSON.stringify(notes));
-            localStorage.setItem('pageNum', pageNum);
-            this.src = baseUrl + pageNum;
-        }
-    }
-    /**
-     * 查看notes数组中是否含有该条数据，
-     * 因为数据不断往后加载，所以只要比较最后一条即可
-     */
-    function hasData(notes, data) {
-        if (!notes || !notes.length) return false;
-        /*var note = notes[notes.length - 1];
-        if(note.note !== data.note) return false;
-        if(note.user !== data.user) return false;
-        if(note.time !== data.time) return false;
-        if(note.chapter !== data.chapter) return false;*/
-        for (var i = 0, len = notes.length; i < len; i++) {
-            if (notes[i].note != data.note) return false;
-        }
-        return true;
-    }
-    /*log('isOver',window.isOver);
-    if(window.isOver) return;
-    log('pageNum',pageNum);
-    $iframe[0].onload = iframeLoadHandler;
-
-    $collectBtn.click(function(){
-        isPause = true;
-        localStorage.setItem('collectPause',!isPause);
-    });
-    $btnContainer.append($collectBtn);
-    $('body').append($iframe);
-    $iframe[0].src = baseUrl + pageNum;*/
+    
 })();
