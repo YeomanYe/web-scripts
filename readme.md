@@ -27,3 +27,6 @@
 - [阳光电影ygdy8.com](http://www.ygdy8.com/)
 - [阳光电影ygdy8.net](http://www.ygdy8.net/)
 
+### export-note
+导出慕课网笔记脚本，支持点赞、采集两种标记导出。还能够暂停导出。
+

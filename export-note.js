@@ -8,7 +8,7 @@
 // @include      https://www.imooc.com/*/*
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=232648
 // @require      http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js
-// @require      http://libs.cdnjs.net/FileSaver.js/1.3.3/FileSaver.min.js
+//  @require https://greasyfork.org/scripts/27104-filesaver/code/FileSaver.js?version=173518
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @grant        none
 // ==/UserScript==
