@@ -28,6 +28,6 @@
 - [阳光电影ygdy8.net](http://www.ygdy8.net/)
 
 ### export-note
-导出慕课网笔记脚本，支持点赞、采集两种标记导出。还能够暂停导出。
+导出慕课网笔记脚本，支持点赞、采集两种标记导出(默认导出自己的笔记)。还能够暂停导出。
 
 [脚本地址](https://greasyfork.org/zh-CN/scripts/35993-%E5%AF%BC%E5%87%BA%E6%85%95%E8%AF%BE%E7%BD%91%E7%AC%94%E8%AE%B0)
