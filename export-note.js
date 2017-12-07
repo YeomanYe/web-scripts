@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         导出慕课网笔记
+// @name         慕课网笔记导出
 // @namespace    https://github.com/yeomanye
-// @version      0.1
+// @version      0.2
 // @description  导出慕课网的笔记，分为点赞和采集两种（本人编写的也会被导出）。导出的格式为json。导出过程可以暂停，下次在进行导出。
 // @author       Ming Ye
 // @match        http://www.imooc.com/*/*
