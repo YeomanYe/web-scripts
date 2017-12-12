@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Google超链接从空白标签打开
 // @namespace    https://github.com/yeomanye
-// @version      0.2
+// @version      0.2.1
 // @description  点击google超链接从新标签页打开
 // @author       Ming Ye
-// @match        https://www.google*
+// @match        https://www.google.com
+// @include      https://www.google*
 // @grant        none
 // ==/UserScript==
 
