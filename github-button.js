@@ -5,7 +5,7 @@
 // @description  Github下载和复制按钮
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.18.2/babel.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.16.0/polyfill.js
-// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=245573
+// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246339
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @author       Ming Ye
 // @match        https://github.com
@@ -17,7 +17,6 @@ var inline_src = (<><![CDATA[
 /* jshint ignore:end */
     /* jshint esnext: false */
     /* jshint esversion: 6 */
-    debugger;
     myDebugger.debugD = false;
     let mouseOverHandler = (evt) => {
         // debugTrue();
@@ -42,7 +41,7 @@ var inline_src = (<><![CDATA[
     }
     
     let log = myDebugger.consoleFactory("github-btn","log",null,true);
-    let debugTrue = myDebugger.debugTrue();    
+    let debugTrue = myDebugger.debugTrue;    
     let nodeList = document.querySelectorAll('.octicon.octicon-file');
     debugTrue();
     let origin = location.origin,
