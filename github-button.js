@@ -5,7 +5,7 @@
 // @description  Github下载和复制按钮
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.18.2/babel.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.16.0/polyfill.js
-// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246339
+// @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246340
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @author       Ming Ye
 // @match        https://github.com
