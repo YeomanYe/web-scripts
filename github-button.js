@@ -2,7 +2,7 @@
 // @name         Github辅助按钮
 // @namespace    https://github.com/yeomanye
 // @version      0.0.1
-// @description  Github下载和复制按钮
+// @description  Github文件下载和复制按钮
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.18.2/babel.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.16.0/polyfill.js
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
