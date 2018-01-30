@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github辅助按钮
 // @namespace    https://github.com/yeomanye
-// @version      0.0.2
+// @version      0.1.0
 // @description  Github文件下载和复制按钮
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
