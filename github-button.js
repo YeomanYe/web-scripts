@@ -1,25 +1,21 @@
 // ==UserScript==
 // @name         Github辅助按钮
 // @namespace    https://github.com/yeomanye
-// @version      0.0.1
+// @version      0.0.2
 // @description  Github文件下载和复制按钮
-// @require      https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.18.2/babel.js
-// @require      https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.16.0/polyfill.js
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @author       Ming Ye
 // @match        https://github.com
 // @include      https://github.com/*/*
+// @grant        none
 // ==/UserScript==
 
-/* jshint ignore:start */
-var inline_src = (<><![CDATA[
-/* jshint ignore:end */
-    /* jshint esnext: false */
-    /* jshint esversion: 6 */
+(function() {
+    'use strict';
     myDebugger.debugD = false;
-    let log = myDebugger.consoleFactory("github-btn","log",null);
-    let debugTrue = myDebugger.debugTrue;  
+    var log = myDebugger.consoleFactory("github-btn","log",null);
+    var debugTrue = myDebugger.debugTrue;  
     // 初始化函数
     function init(){
         createDownLink();
@@ -27,38 +23,38 @@ var inline_src = (<><![CDATA[
     }
     //创建下载链接
     function createDownLink(){
-        let mouseOverHandler = (evt) => {
+        var mouseOverHandler = function(evt){
         // debugTrue();
-        let elem = evt.currentTarget,
+        var elem = evt.currentTarget,
             aElm = elem.querySelector('.fileDownLink');
         aElm.style.display = 'inline-block';
         };
 
-        let mouseOutHandler = (evt) => {
+        var mouseOutHandler = function(evt){
             // debugTrue();
-            let elem = evt.currentTarget,
+            var elem = evt.currentTarget,
                 aElm = elem.querySelector('.fileDownLink');
             aElm.style.display = 'none';
         };
 
-        let linkClick = (evt) => {
-            let elem = evt.currentTarget;
+        var linkClick = function(evt){
+            var elem = evt.currentTarget;
             var link = document.createElement('a');
             link.setAttribute('href',elem.getAttribute('download-url'));
             link.setAttribute('download',elem.getAttribute('filename'));
             link.click();
-        }
+        };
         
-        let nodeList = document.querySelectorAll('.octicon.octicon-file');
-        debugTrue();
-        let origin = location.origin,
+        var nodeList = document.querySelectorAll('.octicon.octicon-file');
+        // debugTrue();
+        var origin = location.origin,
             href = location.href,
             path = href.replace(origin,'');
         if(path.indexOf('tree')<0)
             path += '/tree/master/';
         path = path.replace('tree','raw');
-        for(let i=0,len=nodeList.length;i<len;i++){
-            let trElm = nodeList[i].parentNode.parentNode,
+        for(var i=0,len=nodeList.length;i<len;i++){
+            var trElm = nodeList[i].parentNode.parentNode,
                 cntElm = trElm.querySelector('.content'),
                 cntA = cntElm.querySelector('a'),
                 fileName = cntA.innerText,
@@ -78,17 +74,18 @@ var inline_src = (<><![CDATA[
     }
     //创建复制链接
     function createCopyLink(){
-        let btnGroup = document.querySelector('.file-actions .BtnGroup');
-        let aElm = document.createElement('a');
+        var btnGroup = document.querySelector('.file-actions .BtnGroup');
+        var aElm = document.createElement('a');
+        if(!btnGroup)return;
         aElm.href = '#';
         aElm.innerHTML = 'Copy';
         aElm.className = 'btn btn-sm BtnGroup-item copyButton';
         btnGroup.appendChild(aElm);
-        let addClickHandler = () => {
-            let container = document.querySelector('.js-file-line-container'),
+        var addClickHandler = function(){
+            var container = document.querySelector('.js-file-line-container'),
                 codeArr = container.querySelectorAll('.js-file-line'),
                 text = "";
-            for(let code of codeArr){
+            for(var code of codeArr){
                 text += code.innerText ;
                 if(code.innerText.indexOf('\n')<0) text += '\n';
             }
@@ -96,20 +93,13 @@ var inline_src = (<><![CDATA[
             new Clipboard('.copyButton');
             log.logObj('text',text);     
         };
-        aElm.onclick = (evt) => {
+        aElm.onclick = function(evt){
             clearTimeout(timeout);
             addClickHandler();
             aElm.click();
-        }
-        let timeout = setTimeout(addClickHandler,1000);
+        };
+        var timeout = setTimeout(addClickHandler,1000);
     }
     init();
-    
-    
-    
-
-/* jshint ignore:start */
-]]></>).toString();
-var c = Babel.transform(inline_src, { presets: [ "es2015", "es2016" ] });
-eval(c.code);
-/* jshint ignore:end */
+    // log.logObj('$',$);
+})();
