@@ -5,6 +5,8 @@
 // @description  Github文件下载和复制按钮
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
+// @require      https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js
+// @require      https://cdn.bootcss.com/jquery.pjax/1.1.0/jquery.pjax.min.js
 // @author       Ming Ye
 // @match        https://github.com
 // @include      https://github.com/*/*
@@ -13,7 +15,7 @@
 
 (function() {
     'use strict';
-    myDebugger.debugD = false;
+    myDebugger.debugD = true;
     var log = myDebugger.consoleFactory("github-btn","log",null);
     var debugTrue = myDebugger.debugTrue;  
     // 初始化函数
@@ -101,5 +103,9 @@
         var timeout = setTimeout(addClickHandler,1000);
     }
     init();
-    // log.logObj('$',$);
+    $(document).on('pjax:success',function(evt){
+        log('pjax:success')
+        init();
+    });
+    log.logObj('$',$);
 })();
