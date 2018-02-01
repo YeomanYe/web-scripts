@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.2.1
+// @version      0.2.2
 // @description  添加Github文件下载、复制按钮、图片点击放大
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
@@ -126,7 +126,7 @@
             $modal.css({position:'fixed',width:width+'px',height:height+'px','background-color':'rgba(0,0,0,0.5)',top:0,left:0,'z-index':-1,'padding-top':0,'padding-left':'auto',visibility:'hidden'});
             $modal.append(newImg);
             $('body').append($modal);
-            $modal.one('click',function(e){
+            $modal.on('click',function(e){
                 $modal.css({'z-index':-1,'visibility':'hidden'});
             });
         };
