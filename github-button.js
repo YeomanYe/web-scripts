@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.2.3
-// @description  添加Github文件下载、复制按钮、图片点击放大
+// @version      0.3.0
+// @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @require      https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js
@@ -106,6 +106,7 @@
     //点击图片处理函数
     function bindImgClick(){
         var $imgs = $('article img');
+        var srcArr = [];
         var newImg = null;
         var $modal = null;
         var width = $(window).width(),height = $(window).height();
@@ -126,8 +127,24 @@
             $modal.css({position:'fixed',width:width+'px',height:height+'px','background-color':'rgba(0,0,0,0.5)',top:0,left:0,'z-index':-1,'padding-top':0,'padding-left':'auto',visibility:'hidden'});
             $modal.append(newImg);
             $('body').append($modal);
-            $modal.on('click',function(e){
+            $modal.on('contextmenu',function(e){
                 $modal.css({'z-index':-1,'visibility':'hidden'});
+                return false;
+            });
+            $modal.on('click',function(e){
+                var mouseX = e.originalEvent.x || e.originalEvent.layerX || 0;
+                log.logObj('mouseX',mouseX);
+                var oldSrc = newImg.src;
+                var index = srcArr.indexOf(oldSrc);
+                if(mouseX > width/2) {
+                    //当前src在数组中的位置
+                    index = ++index >= srcArr.length ? 0 : index;
+                    newImg.src = srcArr[index];
+                }else{
+                    index = --index < 0 ? srcArr.length - 1 : index;
+                    newImg.src = srcArr[index];
+                }
+                newImg.onload = newImgOnload;
             });
         };
         var imgClickHandler = function(e){
@@ -144,6 +161,7 @@
             aElm.removeAttribute('href');
             var $img = $(img);
             $img.css('cursor','pointer').on('click',imgClickHandler);
+            srcArr.push(img.src);
         });
     }
     init();
