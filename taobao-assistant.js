@@ -17,14 +17,42 @@
     var searchStr = location.search;
     var argArr = searchStr.split('&');
     var curTagArr = [];
-    argArr.forEach(function(arg){
-        if(arg.indexOf('ppath') >= 0){
-            var tmpArr = arg.split('%');
-            for(var i=0,len=tmpArr.length;i<len;i+=2){
-                curTagArr.push(tmpArr[i] + tmpArr[i+1]);
+    var saveTagArr = function(){
+        argArr.forEach(function(arg){
+            if(arg.indexOf('ppath') >= 0){
+                var tmpArr = arg.split('%');
+                for(var i=0,len=tmpArr.length;i<len;i+=2){
+                    curTagArr.push(tmpArr[i] +'%'+ tmpArr[i+1]);
+                }
             }
+        });
+        if(curTagArr.length>0)
+        localStorage.setItem('preSeaTag',JSON.stringify(curTagArr));
+    };
+    var searchTags = function(){
+        var preTagArr = JSON.parse(localStorage.getItem('preSeaTag'));
+        if(arrayIsEq(curTagArr,preTagArr)) return;
+        var tagElms = document.querySelectorAll('.icon-tag.J_Ajax');
+        var tagArr = [];
+        for(var i=0,len=tagElms.length;i<len;i++){
+            tagArr.push(tagElms[i].getAttribute('trace-click'));
         }
-    });
-    if(curTagArr.length>0)
-    localStorage.setItem('preSeaTag',JSON.stringify(curTagArr));
+        var queryStr = '&cps=yes&ppath=';
+        preTagArr.forEach(function(str){
+            if(tagArr.indexOf('cps:yes_s;ppath:'+str) >= 0)queryStr+=str;
+        });
+        queryStr = queryStr.substr(0,queryStr.length-1);
+        location.search += queryStr;
+    }
+    var arrayIsEq = function(arr1,arr2){
+        if(!arr1 || !arr2) return false;
+        var len1 = arr1.length,len2 = arr2.length;
+        if(len1 !== len2) return false;
+        for(var i=0;i<len1;i++){
+            if(arr1[i]!==arr2[i])return false;
+        }
+        return true;
+    }
+    saveTagArr();
+    searchTags();
 })();
