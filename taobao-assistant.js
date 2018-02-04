@@ -19,8 +19,8 @@
     var curTagArr = [];
     var saveTagArr = function(){
         argArr.forEach(function(arg){
-            if(arg.indexOf('ppath') >= 0){
-                var tmpArr = arg.split('%');
+            if(arg.search('ppath=.+') >= 0){
+                var tmpArr = arg.replace('ppath=','').split('%');
                 for(var i=0,len=tmpArr.length;i<len;i+=2){
                     curTagArr.push(tmpArr[i] +'%'+ tmpArr[i+1]);
                 }
@@ -31,19 +31,23 @@
     };
     var searchTags = function(){
         var preTagArr = JSON.parse(localStorage.getItem('preSeaTag'));
+        if(!preTagArr) return;
         if(arrayIsEq(curTagArr,preTagArr)) return;
         var tagElms = document.querySelectorAll('.icon-tag.J_Ajax');
         var tagArr = [];
         for(var i=0,len=tagElms.length;i<len;i++){
             tagArr.push(tagElms[i].getAttribute('trace-click'));
         }
-        var queryStr = '&cps=yes&ppath=';
+        var queryStr = '&cps=yes&ppath=',len = queryStr.length;
+        location.search += queryStr + preTagArr.join('%');
+        return ;
         preTagArr.forEach(function(str){
-            if(tagArr.indexOf('cps:yes_s;ppath:'+str) >= 0)queryStr+=str;
+            if(tagArr.indexOf('cps:yes_s;ppath:'+str) >= 0)queryStr+=str+'%';
         });
         queryStr = queryStr.substr(0,queryStr.length-1);
+        if(queryStr.length !== len - 1)
         location.search += queryStr;
-    }
+    };
     var arrayIsEq = function(arr1,arr2){
         if(!arr1 || !arr2) return false;
         var len1 = arr1.length,len2 = arr2.length;
@@ -52,7 +56,7 @@
             if(arr1[i]!==arr2[i])return false;
         }
         return true;
-    }
+    };
     saveTagArr();
     searchTags();
 })();
