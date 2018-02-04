@@ -14,7 +14,7 @@
     myDebugger.debugD = true;
     var log = myDebugger.consoleFactory("taobao-assistant","log",null);
     var debugTrue = myDebugger.debugTrue; 
-    var searchStr = location.search;
+   /* var searchStr = location.search;
     var argArr = searchStr.split('&');
     var curTagArr = [];
     var saveTagArr = function(){
@@ -28,19 +28,50 @@
         });
         if(curTagArr.length>0)
         localStorage.setItem('preSeaTag',JSON.stringify(curTagArr));
+    };*/
+    var interval;
+    var tagClickHandler = function(evt){
+        var parent = evt.target.parentNode;
+        var className = parent.className;
+        if(className.indexOf('icon-tag') < 0 || className.indexOf('J_Ajax') < 0) return;
+        //延时，保证能够正确的读取到
+        setTimeout(function(){
+            var aElms = document.querySelectorAll('.crumb.g-clearfix .icon-tag.J_Ajax');
+            var arr = [];
+            for(var i=0,len=aElms.length;i<len;i++){
+                arr.push(aElms[i].dataset.value);
+            }
+            log.logObj('arr',arr);
+            localStorage.setItem('preSeaTag',JSON.stringify(arr));
+            createTag();
+        },500);
+    };
+    var createTag = function(){
+        var panel = document.querySelector('.crumb.g-clearfix');
+        if(!panel || panel.length === 0) {
+            clearInterval(interval);
+            return interval = setInterval(createTag,100);
+        }
+        clearInterval(interval);
+        var newA = document.createElement('a');
+        newA.href = '#';
+        newA.innerText = '恢复筛选';
+        newA.className = 'icon-tag toggle-btn';
+        panel.appendChild(newA);
+        newA.addEventListener('click',searchTags);
+    };
+    var init = function(){
+        document.body.addEventListener('click',tagClickHandler);
+        createTag();
     };
     var searchTags = function(){
         var preTagArr = JSON.parse(localStorage.getItem('preSeaTag'));
-        if(!preTagArr) return;
-        if(arrayIsEq(curTagArr,preTagArr)) return;
         var tagElms = document.querySelectorAll('.icon-tag.J_Ajax');
         var tagArr = [];
         for(var i=0,len=tagElms.length;i<len;i++){
             tagArr.push(tagElms[i].getAttribute('trace-click'));
         }
         var queryStr = '&cps=yes&ppath=',len = queryStr.length;
-        location.search += queryStr + preTagArr.join('%');
-        return ;
         preTagArr.forEach(function(str){
             if(tagArr.indexOf('cps:yes_s;ppath:'+str) >= 0)queryStr+=str+'%';
         });
@@ -57,6 +88,7 @@
         }
         return true;
     };
-    saveTagArr();
-    searchTags();
+    init();
+    // saveTagArr();
+    // searchTags();
 })();
