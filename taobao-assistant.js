@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         淘宝搜索助手
 // @namespace    https://github.com/yeomanye
-// @version      0.1.0
-// @description  保留淘宝搜索的筛选条件并自动运用
+// @version      0.1.1
+// @description  保留淘宝搜索的筛选条件，可以通过点击按钮再运用
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @author       Ming Ye
 // @match        https://s.taobao.com/search*
