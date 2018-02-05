@@ -81,6 +81,4 @@
         return true;
     };
     init();
-    // saveTagArr();
-    // searchTags();
 })();
