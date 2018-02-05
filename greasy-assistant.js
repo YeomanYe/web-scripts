@@ -19,15 +19,24 @@
     log.logObj('$',$);
     var $as = $('article h2 a');
     var urlMap = {};
+    var keys = [];
     var href = location.href;
+    var origin = location.origin;
+    var path = location.pathname;
     $as.each(function(i,a){
         var $a = $as.eq(i);
         var key = $a.text(),aHref = $a.attr('href');
+        keys.push(key);
         var tmpArr = aHref.split('/');
         tmpArr = tmpArr[tmpArr.length-1].split('-');
         var val = aHref.replace(tmpArr[1],'').replace('users','scripts');
-        val = href+val.substr(0,val.length-1) + '/versions/new';
+        val = origin + val.substr(0,val.length-1) + '/versions/new';
         urlMap[key] = val;
+    });
+    $.ajax(urlMap[keys[0]],{
+        success:function(text){
+            console.log(text);
+        }
     });
     log.logObj('urlMap',urlMap);
 })();
