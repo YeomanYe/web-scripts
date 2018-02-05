@@ -11,24 +11,9 @@
 
 (function() {
     'use strict';
-    myDebugger.debugD = true;
+    myDebugger.debugD = false;
     var log = myDebugger.consoleFactory("taobao-assistant","log",null);
     var debugTrue = myDebugger.debugTrue; 
-   /* var searchStr = location.search;
-    var argArr = searchStr.split('&');
-    var curTagArr = [];
-    var saveTagArr = function(){
-        argArr.forEach(function(arg){
-            if(arg.search('ppath=.+') >= 0){
-                var tmpArr = arg.replace('ppath=','').split('%');
-                for(var i=0,len=tmpArr.length;i<len;i+=2){
-                    curTagArr.push(tmpArr[i] +'%'+ tmpArr[i+1]);
-                }
-            }
-        });
-        if(curTagArr.length>0)
-        localStorage.setItem('preSeaTag',JSON.stringify(curTagArr));
-    };*/
     var interval;
     var tagClickHandler = function(evt){
         var parent = evt.target.parentNode;
@@ -39,7 +24,8 @@
             var aElms = document.querySelectorAll('.crumb.g-clearfix .icon-tag.J_Ajax');
             var arr = [];
             for(var i=0,len=aElms.length;i<len;i++){
-                arr.push(aElms[i].dataset.value);
+                var tmpArr = aElms[i].dataset.value.split(':');
+                arr.push(tmpArr[0]+'%3A'+tmpArr[1]);
             }
             log.logObj('arr',arr);
             localStorage.setItem('preSeaTag',JSON.stringify(arr));
