@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         淘宝搜索助手
 // @namespace    https://github.com/yeomanye
-// @version      0.1.1
+// @version      0.2.0
 // @description  保留淘宝搜索的筛选条件，可以通过点击按钮再运用
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @author       Ming Ye
@@ -19,20 +19,19 @@
         var target = evt.target;
         var className = target.parentNode.className;
         var targetClass = target.className;
-        if(className.indexOf('icon-tag') < 0 || className.indexOf('J_Ajax') < 0 || targetClass.indexOf('J_SubmitMulti') < 0) return;
+        if(className.indexOf('J_Ajax') < 0 && targetClass.indexOf('J_Ajax') < 0 && targetClass.indexOf('J_SubmitMulti') < 0) return;
         //延时，保证能够正确的读取到
         setTimeout(function(){
             var aElms = document.querySelectorAll('.crumb.g-clearfix .icon-tag.J_Ajax');
             var arr = [];
             for(var i=0,len=aElms.length;i<len;i++){
-                var tmpArr = aElms[i].dataset.value.split(';');
+                var tmpArr = aElms[i].title.split('：')[1].split(',');
                 for(var j=0,len2=tmpArr.length;j<len2;j++){
-                    var tmpArr2 = tmpArr[j].split(':');
-                    arr.push(tmpArr2[0]+'%3A'+tmpArr2[1]);
+                    arr.push(tmpArr[j]);
                 }
             }
             log.logObj('arr',arr);
-            localStorage.setItem('preSeaTag',JSON.stringify(arr));
+            localStorage.setItem('preSeaTagName',JSON.stringify(arr));
             createTag();
         },600);
     };
@@ -57,15 +56,16 @@
         createTag();
     };
     var searchTags = function(){
-        var preTagArr = JSON.parse(localStorage.getItem('preSeaTag'));
+        var preTagArr = JSON.parse(localStorage.getItem('preSeaTagName'));
         var tagElms = document.getElementsByClassName('J_Ajax');
         var tagArr = [];
         for(var i=0,len=tagElms.length;i<len;i++){
-            tagArr.push(tagElms[i].getAttribute('trace-click'));
+            tagArr.push(tagElms[i].innerText);
         }
         var queryStr = '&cps=yes&ppath=',len = queryStr.length;
         preTagArr.forEach(function(str){
-            if(tagArr.indexOf('cps:yes_s;ppath:'+str) >= 0)queryStr+=str+'%3B';
+            var index = tagArr.indexOf(str);
+            if(index >= 0)queryStr+=tagElms[index].getAttribute('trace-click').replace('cps:yes_s;ppath:','')+'%3B';
         });
         queryStr = queryStr.substr(0,queryStr.length-3);
         if(queryStr.length !== len - 1)
