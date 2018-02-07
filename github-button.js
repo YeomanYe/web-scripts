@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.3.0
-// @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)
+// @version      0.5.0
+// @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)、issues中只查看用户相关态度的内容的内容
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @require      https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js
@@ -18,14 +18,19 @@
     myDebugger.debugD = false;
     var log = myDebugger.consoleFactory("github-btn","log",null);
     var debugTrue = myDebugger.debugTrue;  
+    var href = location.href;
     // 初始化函数
     function init(){
         createDownLink();
         createCopyLink();
         bindImgClick();
+        createFilterPanel();
     }
     //创建下载链接
     function createDownLink(){
+        //如果不是repository页面则直接返回
+        var $files = $('.octicon.octicon-file');
+        if($files.length === 0) return;
         var mouseOverHandler = function(evt){
         // debugTrue();
         var elem = evt.currentTarget,
@@ -48,7 +53,7 @@
             $link.get(0).click();
         };
         
-        var $files = $('.octicon.octicon-file');
+        
         // debugTrue();
         var origin = location.origin,
             href = location.href,
@@ -74,12 +79,14 @@
     }
     //创建复制链接
     function createCopyLink(){
+        //如果不是具体的文件页面则直接返回
+        var $btnGroup = $('.file-actions .BtnGroup');
+        if($btnGroup.length == 0)return;
+
         var tmpArr = location.href.split('/');
         tmpArr = tmpArr[tmpArr.length-1].split('.');//获取扩展名
         var excludeExts = ['jpg','md','markdown','MD','png'];
         if(tmpArr.length > 1 && excludeExts.indexOf(tmpArr[1]) >= 0) return;
-        var $btnGroup = $('.file-actions .BtnGroup');
-        if($btnGroup.length == 0)return;
         var $a = $('<a></a>');
         $a.attr({href:'#',class:'btn btn-sm BtnGroup-item copyButton'});
         $a.html('Copy');
@@ -162,6 +169,58 @@
             var $img = $(img);
             $img.css('cursor','pointer').on('click',imgClickHandler);
             srcArr.push(img.src);
+        });
+    }
+    //在Issue页面生成过滤面板
+    function createFilterPanel(){
+        //如果不是具体issus页面，则直接退出函数
+        var tmpArr = href.split('/');
+        if(tmpArr[tmpArr.length - 2].indexOf('issues')<0)return;
+
+        var $panel = $('.add-reactions-options.mx-1.mb-1').eq(0).clone(true);
+        $('.discussion-sidebar-item.sidebar-assignee.js-discussion-sidebar-item').prepend($panel);
+        var $cancelBtn = $('<button></button>').text('X');
+        $cancelBtn.get(0).className = 'btn-link add-reactions-options-item js-reaction-option-item cancel-filter-btn';
+        $panel.append($cancelBtn);
+        var $btns = $panel.find('button');
+        var filterHandler = function(evt){
+            var btn = evt.currentTarget;
+            var val = btn.value;
+            var className = btn.className;
+            log('value',val);
+            var $comments = $('.timeline-comment-wrapper.js-comment-container');
+            var authors = [];
+            //显示全部
+            if(className.indexOf('cancel-filter-btn')>=0){
+                $comments.each(function(index,comment){
+                    $comments.eq(index).css('display','block');
+                });
+                return;
+            }
+            //替换特殊情况
+            val.replace('LAUGH unreact','LAUGH react');
+            $comments.each(function(index,comment){
+                var $comment = $comments.eq(index);
+                var $sumBtns = $comment.find('.btn-link.reaction-summary-item');
+                $sumBtns.each(function(i,btn){
+                    if(btn.value === val){
+                        authors.push($comment.find('a.author').text());
+                    }
+                });
+            });
+            $comments.each(function(index,comment){
+                var $comment = $comments.eq(index);
+                var authorName = $comment.find('a.author').text();
+                if(authors.indexOf(authorName)<0){
+                    $comment.css('display','none');
+                }else{
+                    $comment.css('display','block');
+                }
+            });
+            $comments.eq(0).css('display','block');
+        };
+        $btns.each(function(index,elem){
+            elem.addEventListener('click',filterHandler);
         });
     }
     init();
