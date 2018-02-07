@@ -2,7 +2,7 @@
 // @name         淘宝搜索助手
 // @namespace    https://github.com/yeomanye
 // @version      0.2.0
-// @description  保留淘宝搜索的筛选条件，可以通过点击按钮再运用
+// @description  自动保留淘宝搜索的筛选条件，点击按钮即可再运用
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @author       Ming Ye
 // @match        https://s.taobao.com/search*
