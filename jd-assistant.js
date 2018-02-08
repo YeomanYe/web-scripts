@@ -18,12 +18,10 @@
     var interval;
     var tagClickHandler = function(evt){
         var target = evt.target;
-        var targetParentClass = target.parentNode.className;
         var className = target.parentNode.parentNode.className;
         var targetClass = target.className;
         var targetId = target.id;
-        debugger;
-        if(className.indexOf('J_valueList') < 0 && targetClass.indexOf('J_btnsConfirm') < 0 && targetParentClass.indexOf('crumb-select-item') < 0 && targetId.indexOf('J-toolbar-load-hook') < 0) return;
+        if(className.indexOf('f-line') < 0 && className.indexOf('f-sort') < 0 && targetClass.indexOf('J_btnsConfirm') < 0 && targetId.indexOf('J-toolbar-load-hook') < 0) return;
         //延时，保证能够正确的读取到
         setTimeout(function(){
             var aElms = document.querySelectorAll('.crumb-select-item');
@@ -47,7 +45,7 @@
             var target = document.querySelector('.icon-tag.toggle-btn.recover-filter');
             if(target) return;
             var newA = document.createElement('a');
-            newA.href = '#';
+            newA.href = 'javascript:;';
             newA.innerText = '恢复筛选';
             newA.className = 'icon-tag toggle-btn recover-filter';
             panel.appendChild(newA);
@@ -66,29 +64,31 @@
             tagArr.push(tagElms[i].innerText);
         }
         var queryStr = '&ev=',len = queryStr.length;
+        var preType = '';
         preTagArr.forEach(function(str){
             var index = tagArr.indexOf(str);
             if(index >= 0){
                 var tmpArr = tagElms[index].href.split('&');
+                var hasSameType = true;//是否存在相同类型的标签
                 tmpArr.forEach(function(str){
-                    var i = str.search('ev=.*');
-                    if(i>=0) queryStr += str.replace('ev=');
+                    var i = str.search('ev=.+');
+                    if(i>=0) {
+                        var curType = str.split('_')[0];
+                        debugger;
+                        if(curType !== preType)
+                            queryStr += str.replace('ev=','');
+                        else{
+                            queryStr = queryStr.substr(0,queryStr.length - 3);
+                            str = str.replace(curType+'_','%7C%7C');
+                            queryStr += str;
+                        }
+                        preType = curType;
+                    }
                 });
-                // queryStr+=tagElms[index].getAttribute('trace-click').replace('cps:yes_s;ppath:','')+'%3B';
             }
         });
-        // queryStr = queryStr.substr(0,queryStr.length-3);
-        if(queryStr.length !== len - 1)
+        if(queryStr.length !== len)
         location.search += queryStr;
-    };
-    var arrayIsEq = function(arr1,arr2){
-        if(!arr1 || !arr2) return false;
-        var len1 = arr1.length,len2 = arr2.length;
-        if(len1 !== len2) return false;
-        for(var i=0;i<len1;i++){
-            if(arr1[i]!==arr2[i])return false;
-        }
-        return true;
     };
     init();
 })();
