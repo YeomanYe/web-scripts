@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         京东搜索助手
 // @namespace    https://github.com/yeomanye
-// @version      0.0.0
+// @version      0.1.0
 // @description  自动保留京东搜索的筛选条件，点击按钮即可再运用
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @author       Ming Ye
@@ -12,7 +12,7 @@
 
 (function() {
     'use strict';
-    myDebugger.debugD = true;
+    myDebugger.debugD = false;
     var log = myDebugger.consoleFactory("jd-assistant","log",null);
     var debugTrue = myDebugger.debugTrue; 
     var interval;
@@ -74,7 +74,6 @@
                     var i = str.search('ev=.+');
                     if(i>=0) {
                         var curType = str.split('_')[0];
-                        debugger;
                         if(curType !== preType)
                             queryStr += str.replace('ev=','');
                         else{
