@@ -35,9 +35,9 @@
 ### github-button
 Github助手，给Github添加单文件下载、单文件复制、图片点击放大(右击恢复)等功能
 
-![脚本地址](https://greasyfork.org/zh-CN/scripts/37899-github%E5%8A%A9%E6%89%8B)
+[脚本地址](https://greasyfork.org/zh-CN/scripts/37899-github%E5%8A%A9%E6%89%8B)
 
 ### taobao-assistant
 淘宝搜索助手，保留淘宝搜索的筛选条件，可以通过点击按钮再运用。
 
-![脚本地址](https://greasyfork.org/zh-CN/scripts/38198-%E6%B7%98%E5%AE%9D%E6%90%9C%E7%B4%A2%E5%8A%A9%E6%89%8B)
+[脚本地址](https://greasyfork.org/zh-CN/scripts/38198-%E6%B7%98%E5%AE%9D%E6%90%9C%E7%B4%A2%E5%8A%A9%E6%89%8B)
