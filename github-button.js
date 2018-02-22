@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.5.1
+// @version      0.5.2
 // @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)、issues中只查看用户相关态度的内容的内容
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
@@ -19,14 +19,20 @@
     var log = myDebugger.consoleFactory("github-btn","log",null);
     var debugTrue = myDebugger.debugTrue;  
     var href = location.href;
-    // 初始化函数
+    /**
+     * 初始化函数
+     * @return {[type]} [description]
+     */
     function init(){
         createDownLink();
         createCopyLink();
         bindImgClick();
         createFilterPanel();
     }
-    //创建下载链接
+    /**
+     * 创建下载链接
+     * @return {[type]} [description]
+     */
     function createDownLink(){
         //如果不是repository页面则直接返回
         var $files = $('.octicon.octicon-file');
@@ -77,7 +83,10 @@
             $a.on('click',linkClick);
         });
     }
-    //创建复制链接
+    /**
+     * 创建复制链接
+     * @return {[type]} [description]
+     */
     function createCopyLink(){
         //如果不是具体的文件页面则直接返回
         var $btnGroup = $('.file-actions .BtnGroup');
@@ -110,13 +119,21 @@
         });
         var timeout = setTimeout(addClickHandler,1000);
     }
-    //点击图片处理函数
+    /**
+     * 点击图片处理函数
+     * @return {[type]} [description]
+     */
     function bindImgClick(){
         var $imgs = $('article img');
         var srcArr = [];
         var newImg = null;
         var $modal = null;
         var width = $(window).width(),height = $(window).height();
+        //如果是issues页面，则改变img集合
+        var tmpArr = href.split('/');
+        if(tmpArr[tmpArr.length - 2].indexOf('issues')>=0){
+            $imgs = $('#show_issue .comment img');
+        }
         var newImgOnload = function(){
             var imgWidth = newImg.width,imgHeight = newImg.height;
             if(imgWidth > width || imgHeight > height)
@@ -171,7 +188,10 @@
             srcArr.push(img.src);
         });
     }
-    //在Issue页面生成过滤面板
+    /**
+     * 在Issue页面生成过滤面板
+     * @return {[type]} [description]
+     */
     function createFilterPanel(){
         //如果不是具体issus页面，则直接退出函数
         var tmpArr = href.split('/');
