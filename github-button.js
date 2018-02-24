@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.5.2
-// @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)、issues中只查看用户相关态度的内容的内容
+// @version      0.6.0
+// @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)、issues中只查看用户相关态度的内容、issues列表项从新标签页打开
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @require      https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js
@@ -28,6 +28,7 @@
         createCopyLink();
         bindImgClick();
         createFilterPanel();
+        openIssueFromNew();
     }
     /**
      * 创建下载链接
@@ -81,6 +82,20 @@
             trElm.onmouseover=mouseOverHandler;
             trElm.onmouseout=mouseOutHandler;
             $a.on('click',linkClick);
+        });
+    }
+    /**
+     * issues页面从新标签打开
+     * @return {[type]} [description]
+     */
+    function openIssueFromNew(){
+        var tmpArr = href.split('/');
+        if(tmpArr[tmpArr.length - 1].indexOf('issues') < 0) return;
+        $('.issues-listing .js-navigation-container a').on('click',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            log('this',this);
+            window.open(this.href);
         });
     }
     /**
