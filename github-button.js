@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.6.0
+// @version      0.6.1
 // @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)、issues中只查看用户相关态度的内容、issues列表项从新标签页打开
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
@@ -66,7 +66,7 @@
             href = location.href,
             path = href.replace(origin,'');
         if(path.indexOf('tree')<0)
-            path += 'tree/master/';
+            path += '/tree/master/';
         path = path.replace('tree','raw');
         $files.each(function(i,fileElm){
             var trElm = fileElm.parentNode.parentNode,
@@ -75,7 +75,7 @@
                 fileName = cntA.innerText,
                 $a = $('<a></a>');
             $a.text('下载');
-            $a.attr({class:'fileDownLink','download-url':path+fileName,'filename':fileName});
+            $a.attr({class:'fileDownLink','download-url':path+'/'+fileName,'filename':fileName});
             $a.css({cursor:'pointer',visibility:'hidden'});
             cntElm.appendChild($a.get(0));
             log.logObj('tr',trElm);
