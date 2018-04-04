@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         漫画翻页脚本
 // @namespace    https://github.com/yeomanye
-// @version      0.6
+// @version      1.0
 // @description  KuKu漫画网站点击漫画图片进行翻页的脚本
 // @author       Ming Ye
 // @homepage     https://greasyfork.org/zh-CN/scripts/33966-%E6%BC%AB%E7%94%BB%E7%BF%BB%E9%A1%B5%E8%84%9A%E6%9C%AC
@@ -34,7 +34,7 @@
             suffix = curPage.split(".")[1], //文件后缀
             pageNum = Number.parseInt(curPage), //页码
             totalPage = getTotalPage(img.parentNode.innerText); // 获取总页数
-        debugFun(e);
+        debugFun('mousedown',pageNum);
         // 左键向上翻页
         if(e.which === 1){
             jumpLink = curLink.replace(curPage, pageNum + 1 + "." + suffix);
@@ -47,7 +47,7 @@
             if (pageNum <= 1) return;
             jumpLink = curLink.replace(curPage, pageNum - 1 + "." + suffix);
         }
-        window.top.location.href = jumpLink;
+        window.location.href = jumpLink;
     };
 
     var imgs = document.getElementsByTagName("img"),
@@ -55,9 +55,7 @@
     for (var i = 0, len = imgs.length; i < len; i++) {
         var img = imgs[i],
             url = decodeURI(img.src);
-        if (url.indexOf(title) >= 0) {
             debugFun(img);
             img.onmousedown = imgMouseDownHandler;
-        }
     }
 })();
