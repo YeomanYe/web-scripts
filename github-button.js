@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.6.1
+// @version      0.7
 // @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)、issues中只查看用户相关态度的内容、issues列表项从新标签页打开
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @require      https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js
 // @require      https://cdn.bootcss.com/jquery.pjax/1.1.0/jquery.pjax.min.js
+// @require https://greasyfork.org/scripts/53536-ui/code/UI.js?version=281393
 // @author       Ming Ye
 // @match        https://github.com
 // @include      https://github.com/*/*
@@ -116,20 +117,26 @@
         $a.html('Copy');
         $btnGroup.append($a);
         var addClickHandler = function(){
+            timeout = null;
             var $codes = $('.js-file-line-container .js-file-line'),
-                text = "";
+                text = '';
             $codes.each(function(index,code){
                 log.logObj('code',code);
                 text += code.innerText;
                 if(code.innerText.indexOf('\n')<0) text += '\n';
             });
             $a.attr('data-clipboard-text',text);
+            $a.on('click',function(){
+                showTips('Copy Success');
+            });
             new Clipboard('.copyButton');
             log.logObj('text',text);     
         };
         $a.one('click',function(evt){
-            clearTimeout(timeout);
-            addClickHandler();
+            if(timeout){
+                clearTimeout(timeout);                
+                addClickHandler();
+            }
             $a.click();
         });
         var timeout = setTimeout(addClickHandler,1000);
