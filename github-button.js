@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github助手
 // @namespace    https://github.com/yeomanye
-// @version      0.7
+// @version      0.7.1
 // @description  添加Github文件下载、复制按钮、图片点击放大(右击恢复)、issues中只查看用户相关态度的内容、issues列表项从新标签页打开
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=246342
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
@@ -196,7 +196,7 @@
         var imgClickHandler = function(e){
             log('imgClickHandler');
             if(!$modal) initModal();
-            $modal.css({visibility:'visible','z-index':999});
+            $modal.css({visibility:'visible','z-index':999,userSelect:'none'});
             var oldImg = e.currentTarget;
             newImg.src = oldImg.src;
             //计算宽高
@@ -204,10 +204,13 @@
         };
         $imgs.each(function(i,img){
             var aElm = img.parentNode;
+            if(aElm.getAttribute('rel') !== 'noopener noreferrer') return;
             aElm.removeAttribute('href');
             var $img = $(img);
             $img.css('cursor','pointer').on('click',imgClickHandler);
-            srcArr.push(img.src);
+            //去重
+            let index = srcArr.indexOf(img.src);
+            if(index < 0) srcArr.push(img.src);
         });
     }
     /**
