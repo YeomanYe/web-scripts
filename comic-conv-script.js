@@ -32,8 +32,13 @@
             jumpLink, // 跳转链接
             curPage = arr[arr.length - 1], //当前页
             suffix = curPage.split(".")[1], //文件后缀
-            pageNum = Number.parseInt(curPage), //页码
-            totalPage = getTotalPage(img.parentNode.innerText); // 获取总页数
+            pageNum = Number.parseInt(curPage); //页码
+        var tmpNode = img.parentNode;
+        do{
+            if(tmpNode.nodeName === 'TR') break;
+            else tmpNode = tmpNode.parentNode;
+        }while(true);
+        var totalPage = getTotalPage(tmpNode.innerText); // 获取总页数
         debugFun('mousedown',pageNum);
         // 左键向上翻页
         if(e.which === 1){
