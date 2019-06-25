@@ -9,6 +9,7 @@
 // @match        http://comic.kukudm.com/comiclist/*
 // @include      http://comic2.kukudm.com/comiclist/*
 // @include      http://comic3.kukudm.com/comiclist/*
+// @include      http://comic.ikkdm.com/comiclist/*
 // @require      https://greasyfork.org/scripts/34143-debug/code/debug.js?version=229638
 // @grant        none
 // ==/UserScript==
